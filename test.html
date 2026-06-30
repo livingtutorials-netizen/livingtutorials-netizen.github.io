@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Riley 🦌</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Nunito+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; }
+    html, body { margin: 0; min-height: 100%; }
+    body {
+      background: #f5efdf;
+      font-family: 'Nunito Sans', system-ui, sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    @keyframes flUp {
+      from { opacity: 0; transform: translateY(18px); }
+      to   { opacity: 1; transform: none; }
+    }
+    @keyframes drift {
+      0%, 100% { transform: translate(0, 0); }
+      50%       { transform: translate(14px, -16px); }
+    }
+    @keyframes pulseRing {
+      0%   { box-shadow: 0 0 0 0   rgba(91,138,95,.45); }
+      100% { box-shadow: 0 0 0 18px rgba(91,138,95,0); }
+    }
+
+    /* ── page shell ── */
+    .page {
+      --accent: #5b8a5f;
+      position: relative;
+      min-height: 100vh;
+      overflow: hidden;
+      background: linear-gradient(180deg, #fdf8ee, #f3ecd9);
+      display: flex;
+      justify-content: center;
+      padding: clamp(34px,7vw,68px) clamp(20px,5vw,30px);
+    }
+
+    /* ── background blobs ── */
+    .blob {
+      position: absolute;
+      border-radius: 50%;
+      pointer-events: none;
+    }
+    .blob-1 {
+      top: 6%; left: -40px;
+      width: 130px; height: 130px;
+      background: #cfe0c4; opacity: .5;
+      animation: drift 8s ease-in-out infinite;
+    }
+    .blob-2 {
+      top: 40%; right: -56px;
+      width: 170px; height: 170px;
+      background: #f3d9c0; opacity: .5;
+      animation: drift 11s ease-in-out infinite reverse;
+    }
+    .blob-3 {
+      bottom: 4%; left: 8%;
+      width: 90px; height: 90px;
+      background: #dce7d2; opacity: .55;
+      animation: drift 9.5s ease-in-out infinite;
+    }
+
+    /* ── content column ── */
+    .content {
+      position: relative;
+      z-index: 1;
+      width: 100%;
+      max-width: 460px;
+    }
+
+    /* ── hero ── */
+    .hero {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      gap: 16px;
+      animation: flUp .6s ease both;
+    }
+    .avatar {
+      width: 112px; height: 112px;
+      border-radius: 32px;
+      background: #ece3d2;
+      background-image: repeating-linear-gradient(45deg,
+        rgba(91,138,95,.18) 0 8px, transparent 8px 16px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font: 600 10px ui-monospace, monospace;
+      color: #7e8a72;
+      animation: pulseRing 2.6s ease-out infinite;
+    }
+    .name {
+      margin: 0;
+      font-family: 'Fredoka', sans-serif;
+      font-weight: 600;
+      font-size: clamp(34px, 9vw, 42px);
+      color: #2f4a3a;
+    }
+    .bio {
+      margin: 0;
+      max-width: 360px;
+      background: #fff;
+      border-radius: 20px;
+      padding: 16px 18px;
+      box-shadow: 0 8px 24px rgba(57,71,59,.09);
+      font-size: 15px;
+      line-height: 1.6;
+      color: #56624f;
+    }
+
+    /* ── socials ── */
+    .socials {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-top: 26px;
+      animation: flUp .6s ease both;
+      animation-delay: .08s;
+    }
+    .social-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      padding: 16px;
+      border-radius: 16px;
+      text-decoration: none;
+      font-weight: 700;
+      font-size: 15px;
+      color: #fff;
+      transition: transform .18s, box-shadow .18s;
+    }
+    .social-btn-x    { background: #20242b; box-shadow: 0 6px 16px rgba(32,36,43,.22); }
+    .social-btn-tg   { background: #3fa0c4; box-shadow: 0 6px 16px rgba(63,160,196,.28); }
+    .social-btn-bsky { background: #4a9eff; box-shadow: 0 6px 16px rgba(74,158,255,.3); }
+
+    .social-btn-x:hover    { transform: translateY(-3px); box-shadow: 0 12px 24px rgba(32,36,43,.3); }
+    .social-btn-tg:hover   { transform: translateY(-3px); box-shadow: 0 12px 24px rgba(63,160,196,.38); }
+    .social-btn-bsky:hover { transform: translateY(-3px); box-shadow: 0 12px 24px rgba(74,158,255,.4); }
+
+    /* ── travel ── */
+    .travel-heading {
+      margin: 34px 0 4px;
+      font-family: 'Fredoka', sans-serif;
+      font-weight: 600;
+      font-size: 23px;
+      color: #2f4a3a;
+      animation: flUp .6s ease both;
+      animation-delay: .16s;
+    }
+
+    .trip-card {
+      position: relative;
+      background: #fff;
+      border-radius: 20px;
+      padding: 16px 18px;
+      margin-top: 13px;
+      box-shadow: 0 6px 20px rgba(57,71,59,.08);
+      transition: transform .2s;
+      overflow: hidden;
+    }
+    .trip-card:hover { transform: translateY(-3px); }
+
+    .trip-accent {
+      position: absolute;
+      left: 0; top: 0; bottom: 0;
+      width: 5px;
+      background: var(--accent, #5b8a5f);
+    }
+    .trip-notch {
+      position: absolute;
+      left: -7px; top: 50%;
+      width: 14px; height: 14px;
+      border-radius: 50%;
+      background: #fdf8ee;
+      transform: translateY(-50%);
+    }
+
+    .trip-inner {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      padding-left: 8px;
+    }
+    .trip-flag {
+      width: 52px; height: 52px;
+      border-radius: 16px;
+      background: #eef3e8;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 27px;
+      flex: none;
+    }
+    .trip-info { flex: 1; min-width: 0; }
+
+    .trip-con {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      font: 800 10px/1 'Nunito Sans', sans-serif;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      color: var(--accent, #5b8a5f);
+    }
+    .trip-details {
+      display: flex;
+      align-items: baseline;
+      gap: 8px;
+      margin-top: 3px;
+    }
+    .trip-city {
+      font-family: 'Fredoka', sans-serif;
+      font-weight: 600;
+      font-size: 19px;
+      color: #2f4a3a;
+    }
+    .trip-range { font-size: 12.5px; color: #8a937e; }
+    .trip-next {
+      font: 800 8px/1 'Nunito Sans';
+      letter-spacing: .08em;
+      color: #fff;
+      background: #e08a4f;
+      border-radius: 20px;
+      padding: 3px 7px;
+    }
+    .trip-now {
+      font: 800 8px/1 'Nunito Sans';
+      letter-spacing: .08em;
+      color: #fff;
+      background: var(--accent, #5b8a5f);
+      border-radius: 20px;
+      padding: 3px 7px;
+    }
+
+    /* ── status messages (loading / empty / error) ── */
+    .trip-msg {
+      margin-top: 13px;
+      text-align: center;
+      font-size: 13.5px;
+      line-height: 1.5;
+      color: #8a937e;
+      background: #fff;
+      border-radius: 20px;
+      padding: 18px;
+      box-shadow: 0 6px 20px rgba(57,71,59,.08);
+    }
+    .trip-msg code {
+      font: 600 12px ui-monospace, monospace;
+      color: #56624f;
+      background: #eef3e8;
+      border-radius: 6px;
+      padding: 1px 5px;
+    }
+    .trip-when {
+      font: 700 11px/1 'Nunito Sans';
+      color: var(--accent, #5b8a5f);
+      background: #e7f0e2;
+      border-radius: 20px;
+      padding: 8px 11px;
+      white-space: nowrap;
+      flex: none;
+    }
+
+    /* ── footer ── */
+    .footer {
+      text-align: center;
+      margin-top: 28px;
+      font-size: 12.5px;
+      color: #9aa395;
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <div class="blob blob-1"></div>
+    <div class="blob blob-2"></div>
+    <div class="blob blob-3"></div>
+
+    <div class="content">
+
+      <!-- HERO -->
+      <div class="hero">
+        <div class="avatar">photo</div>
+        <h1 class="name">Riley 🦌</h1>
+        <p class="bio">Hey! I'm Riley, a deer living in Singapore 🇸🇬 I love traveling and meeting new friends wherever the road takes me. Hope our paths can cross someday! 🌿</p>
+      </div>
+
+      <!-- SOCIALS -->
+      <div class="socials">
+        <a href="https://x.com/riley_the_deer" target="_blank" rel="noopener noreferrer" class="social-btn social-btn-x">
+          <svg viewBox="0 0 24 24" width="17" height="17" fill="none" aria-hidden="true">
+            <path d="M4.8 4.8 L19.2 19.2 M19.2 4.8 L4.8 19.2" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/>
+          </svg>
+          <span>Follow on X</span>
+        </a>
+        <a href="https://t.me/rileythedeer" target="_blank" rel="noopener noreferrer" class="social-btn social-btn-tg">
+          <svg viewBox="0 0 24 24" width="19" height="19" aria-hidden="true">
+            <path d="M21.6 4.4 2.9 11.6c-.95.37-.94 1.74.02 2.05l4.6 1.45 1.78 5.4c.24.72 1.15.9 1.64.32l2.45-3.02 4.7 3.45c.6.44 1.45.09 1.6-.66L23.5 5.5c.2-.96-.72-1.74-1.9-1.1z" fill="currentColor"/>
+          </svg>
+          <span>Message on Telegram</span>
+        </a>
+        <a href="https://bsky.app/profile/rileythedeer.bsky.social" target="_blank" rel="noopener noreferrer" class="social-btn social-btn-bsky">
+          <svg viewBox="0 0 24 24" width="19" height="19" fill="currentColor" aria-hidden="true">
+            <path d="M12 9.5C10.3 6.6 7.2 4 5 4 3.2 4 2.5 5.3 2.5 7c0 2.4 2.6 4.3 4.8 5-2.2.7-4.8 1.5-4.8 3.6 0 1.4 1 2.4 2.6 2.4 2.4 0 4.6-2.6 6.9-6.4 2.3 3.8 4.5 6.4 6.9 6.4 1.6 0 2.6-1 2.6-2.4 0-2.1-2.6-2.9-4.8-3.6 2.2-.7 4.8-2.6 4.8-5 0-1.7-.7-3-2.5-3-2.2 0-5.3 2.6-7 5.5z"/>
+          </svg>
+          <span>Find me on Bluesky</span>
+        </a>
+      </div>
+
+      <!-- TRAVEL -->
+      <h2 class="travel-heading">Where I'm headed ✈️</h2>
+      <div id="trips"></div>
+
+      <div class="footer">📍 Home base: Singapore</div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      // ─────────────────────────────────────────────────────────────
+      //  CONFIG — point this at your Google Sheet.
+      //
+      //  1. In the Sheet: Share → General access → "Anyone with the link"
+      //     → Viewer.
+      //  2. Copy the ID from the sheet URL:
+      //     docs.google.com/spreadsheets/d/<THIS_PART>/edit
+      //  3. Paste it below. (Optional) set SHEET_TAB to a specific tab name.
+      //
+      //  Expected columns (header row, any order):
+      //     Convention | City | Flag | Start | End
+      //     OFFF       | Osaka| 🇯🇵  | 2026-07-25 | 2026-08-03
+      // ─────────────────────────────────────────────────────────────
+      const SHEET_ID  = '1FCQWxqWpoxzzlQaKJn8hCAeGtQi7qCilySZ4PSmQfrg';
+      const SHEET_TAB = '';   // leave '' to use the first tab
+
+      // Auto-refresh: re-pull the sheet every N minutes so an open tab stays
+      // current without a manual reload. Set to 0 to disable.
+      const REFRESH_MINUTES = 5;
+
+      const TICKET_ICON = '<svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9a2 2 0 0 0 0 6v2a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-2a2 2 0 0 1 0-6V7a1 1 0 0 0-1-1H5a1 1 0 0 0-1 1z"/><path d="M14 6v12"/></svg>';
+
+      const container = document.getElementById('trips');
+
+      // Sample data shown until SHEET_ID is configured, so the page never
+      // looks empty while you set things up.
+      const SAMPLE_ROWS = [
+        { con: 'IWAG', city: 'Jakarta', flag: '🇮🇩', start: '2026-07-03', end: '2026-07-07' },
+        { con: 'OFFF', city: 'Osaka',   flag: '🇯🇵', start: '2026-07-25', end: '2026-08-03' },
+      ];
+
+      function esc(s) {
+        return String(s == null ? '' : s)
+          .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+      }
+
+      function fmt(d) {
+        return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+      }
+
+      // Accepts 2026-07-03 (ISO) or 7/3/2026 (US). endOfDay pins to 23:59:59
+      // so an event stays visible through the whole of its final day.
+      function parseDate(str, endOfDay) {
+        str = String(str || '').trim();
+        let y, m, d;
+        const iso = /^(\d{4})-(\d{1,2})-(\d{1,2})$/.exec(str);
+        const us  = /^(\d{1,2})\/(\d{1,2})\/(\d{4})$/.exec(str);
+        if (iso)      { y = +iso[1]; m = +iso[2]; d = +iso[3]; }
+        else if (us)  { m = +us[1];  d = +us[2];  y = +us[3]; }
+        else {
+          const dt = new Date(str);
+          return isNaN(dt) ? null : dt;
+        }
+        return new Date(y, m - 1, d, endOfDay ? 23 : 0, endOfDay ? 59 : 0, endOfDay ? 59 : 0);
+      }
+
+      // Build a trip view-model. Returns null for rows that can't be parsed
+      // or whose end date is already in the past (auto-removed).
+      function buildTrip(row) {
+        const start = parseDate(row.start, false);
+        const end   = parseDate(row.end,   true);
+        if (!start || !end) return null;
+
+        const now  = new Date();
+        if (now > end) return null;            // event finished → drop it
+
+        const days = Math.ceil((start - now) / 86400000);
+        let status, when;
+        if (now >= start)    { status = 'now'; when = 'Happening now'; }
+        else if (days <= 0)  { status = 'up';  when = 'Today'; }
+        else if (days === 1) { status = 'up';  when = 'Tomorrow'; }
+        else                 { status = 'up';  when = 'in ' + days + ' days'; }
+
+        const range = fmt(start) + ' – ' + fmt(end) + ', ' + end.getFullYear();
+        return {
+          con: row.con, city: row.city, flag: row.flag,
+          range: range, when: when, status: status, start: start, isNext: false,
+        };
+      }
+
+      function render(rows) {
+        const trips = rows.map(buildTrip).filter(Boolean);
+        trips.sort(function (a, b) { return a.start - b.start; });
+
+        // First still-upcoming trip (not already happening) gets the NEXT tag.
+        let marked = false;
+        trips.forEach(function (t) {
+          if (!marked && t.status === 'up') { t.isNext = true; marked = true; }
+        });
+
+        container.innerHTML = '';
+
+        if (!trips.length) {
+          container.innerHTML =
+            '<div class="trip-msg">No upcoming trips right now — check back soon! 🌿</div>';
+          return;
+        }
+
+        trips.forEach(function (t) {
+          let badge = '';
+          if (t.status === 'now') badge = '<span class="trip-now">NOW</span>';
+          else if (t.isNext)      badge = '<span class="trip-next">NEXT</span>';
+
+          const el = document.createElement('div');
+          el.className = 'trip-card';
+          el.innerHTML =
+            '<div class="trip-accent"></div>' +
+            '<div class="trip-notch"></div>' +
+            '<div class="trip-inner">' +
+              '<div class="trip-flag">' + esc(t.flag) + '</div>' +
+              '<div class="trip-info">' +
+                '<div class="trip-con">' + TICKET_ICON + '<span>' + esc(t.con) + '</span></div>' +
+                '<div class="trip-details">' +
+                  '<span class="trip-city">' + esc(t.city) + '</span>' +
+                  '<span class="trip-range">' + esc(t.range) + '</span>' +
+                  badge +
+                '</div>' +
+              '</div>' +
+              '<span class="trip-when">' + esc(t.when) + '</span>' +
+            '</div>';
+          container.appendChild(el);
+        });
+      }
+
+      function showMsg(html) { container.innerHTML = '<div class="trip-msg">' + html + '</div>'; }
+
+      // ── CSV parsing (handles quoted fields, embedded commas/quotes) ──
+      function parseCSV(text) {
+        const rows = [];
+        let row = [], field = '', inQ = false;
+        for (let i = 0; i < text.length; i++) {
+          const c = text[i];
+          if (inQ) {
+            if (c === '"') {
+              if (text[i + 1] === '"') { field += '"'; i++; }
+              else inQ = false;
+            } else field += c;
+          } else if (c === '"') inQ = true;
+          else if (c === ',') { row.push(field); field = ''; }
+          else if (c === '\r') { /* ignore */ }
+          else if (c === '\n') { row.push(field); rows.push(row); row = []; field = ''; }
+          else field += c;
+        }
+        if (field !== '' || row.length) { row.push(field); rows.push(row); }
+        return rows;
+      }
+
+      // Map sheet rows onto our column names via the header row (case-insensitive).
+      function rowsFromCSV(text) {
+        const grid = parseCSV(text).filter(function (r) {
+          return r.some(function (c) { return c.trim() !== ''; });
+        });
+        if (grid.length < 2) return [];
+        const headers = grid[0].map(function (h) { return h.trim().toLowerCase(); });
+        const col = function (name) { return headers.indexOf(name); };
+        const ci = {
+          con:   col('convention'),
+          city:  col('city'),
+          flag:  col('flag'),
+          start: col('start'),
+          end:   col('end'),
+        };
+        const at = function (r, i) { return i >= 0 && r[i] != null ? r[i].trim() : ''; };
+        return grid.slice(1).map(function (r) {
+          return {
+            con:   at(r, ci.con),
+            city:  at(r, ci.city),
+            flag:  at(r, ci.flag),
+            start: at(r, ci.start),
+            end:   at(r, ci.end),
+          };
+        });
+      }
+
+      let loaded = false;   // have we ever rendered real data?
+
+      // silent=true (used by auto-refresh) keeps existing cards on screen:
+      // no "Loading…" flash, and a transient fetch error is logged rather
+      // than replacing good data with an error message.
+      function loadFromSheet(silent) {
+        let url = 'https://docs.google.com/spreadsheets/d/' +
+                  encodeURIComponent(SHEET_ID) + '/gviz/tq?tqx=out:csv';
+        if (SHEET_TAB) url += '&sheet=' + encodeURIComponent(SHEET_TAB);
+
+        if (!silent) showMsg('Loading trips…');
+        fetch(url)
+          .then(function (res) {
+            if (!res.ok) throw new Error('HTTP ' + res.status);
+            return res.text();
+          })
+          .then(function (text) { render(rowsFromCSV(text)); loaded = true; })
+          .catch(function (err) {
+            console.error('[trips] failed to load sheet:', err);
+            if (!loaded) {
+              showMsg("Couldn't load the travel schedule right now. ");
+            }
+          });
+      }
+
+      if (!SHEET_ID || SHEET_ID === 'PASTE_YOUR_SHEET_ID_HERE') {
+        console.info('[trips] SHEET_ID not set — showing sample data. ' +
+                     'Edit SHEET_ID in index.html to load from your Google Sheet.');
+        render(SAMPLE_ROWS);
+      } else {
+        loadFromSheet(false);
+        if (REFRESH_MINUTES > 0) {
+          // Re-pull on a timer, and also the moment the tab regains focus
+          // (a laptop waking from sleep, switching back to the tab) so it
+          // never shows stale data after a long idle period.
+          setInterval(function () { loadFromSheet(true); }, REFRESH_MINUTES * 60000);
+          document.addEventListener('visibilitychange', function () {
+            if (!document.hidden) loadFromSheet(true);
+          });
+        }
+      }
+    })();
+  </script>
+</body>
+</html>
