@@ -288,7 +288,7 @@
 
       <!-- HERO -->
       <div class="hero">
-        <div class="avatar">photo</div>
+        <div class="avatar" id="avatar">photo</div>
         <h1 class="name">Riley 🦌</h1>
         <p class="bio">Hey! I'm Riley, a deer living in Singapore 🇸🇬 I love traveling and meeting new friends wherever the road takes me. Hope our paths can cross someday! 🌿</p>
       </div>
@@ -335,8 +335,14 @@
       //  3. Paste it below. (Optional) set SHEET_TAB to a specific tab name.
       //
       //  Expected columns (header row, any order):
-      //     Convention | City | Flag | Start | End
-      //     OFFF       | Osaka| 🇯🇵  | 2026-07-25 | 2026-08-03
+      //     Convention | City | Flag | Start | End | Photo (optional)
+      //     OFFF       | Osaka| 🇯🇵  | 2026-07-25 | 2026-08-03 | https://…/me.jpg
+      //
+      //  Photo: put a DIRECT image URL in any row's Photo cell (the first
+      //  non-empty one is used for the avatar). It must be a direct link to
+      //  the image file — e.g. Imgur/Cloudinary/your own host. A Google
+      //  Drive "share" link will NOT work; if empty or broken, the styled
+      //  placeholder is shown instead.
       // ─────────────────────────────────────────────────────────────
       const SHEET_ID  = '1FCQWxqWpoxzzlQaKJn8hCAeGtQi7qCilySZ4PSmQfrg';
       const SHEET_TAB = '';   // leave '' to use the first tab
@@ -363,6 +369,23 @@
 
       function fmt(d) {
         return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+      }
+
+      // Swap the placeholder for a real photo only once it has successfully
+      // loaded — a missing/broken URL leaves the styled placeholder in place.
+      function setAvatar(url) {
+        url = String(url || '').trim();
+        const el = document.getElementById('avatar');
+        if (!el || !url) return;
+        const img = new Image();
+        img.onload = function () {
+          el.textContent = '';
+          el.style.backgroundImage = 'url("' + url.replace(/"/g, '%22') + '")';
+          el.style.backgroundSize = 'cover';
+          el.style.backgroundPosition = 'center';
+        };
+        img.onerror = function () { console.warn('[avatar] could not load photo:', url); };
+        img.src = url;
       }
 
       // Accepts 2026-07-03 (ISO) or 7/3/2026 (US). endOfDay pins to 23:59:59
@@ -406,6 +429,10 @@
       }
 
       function render(rows) {
+        // Profile photo is sheet-wide: use the first non-empty Photo cell.
+        const withPhoto = rows.find(function (r) { return r.photo && r.photo.trim(); });
+        setAvatar(withPhoto && withPhoto.photo);
+
         const trips = rows.map(buildTrip).filter(Boolean);
         trips.sort(function (a, b) { return a.start - b.start; });
 
@@ -486,6 +513,7 @@
           flag:  col('flag'),
           start: col('start'),
           end:   col('end'),
+          photo: col('photo'),
         };
         const at = function (r, i) { return i >= 0 && r[i] != null ? r[i].trim() : ''; };
         return grid.slice(1).map(function (r) {
@@ -495,6 +523,7 @@
             flag:  at(r, ci.flag),
             start: at(r, ci.start),
             end:   at(r, ci.end),
+            photo: at(r, ci.photo),
           };
         });
       }
@@ -519,7 +548,8 @@
           .catch(function (err) {
             console.error('[trips] failed to load sheet:', err);
             if (!loaded) {
-              showMsg("Couldn't load the travel schedule right now. ");
+              showMsg("Couldn't load the travel schedule right now. " +
+                      'Make sure the sheet is shared as “Anyone with the link”.');
             }
           });
       }
