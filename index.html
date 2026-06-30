@@ -9,9 +9,16 @@
   <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Nunito+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
   <style>
     * { box-sizing: border-box; }
-    html, body { margin: 0; min-height: 100%; }
+    html, body {
+      margin: 0;
+      min-height: 100%;
+      /* Kill the rubber-band/bounce that otherwise reveals what's behind. */
+      overscroll-behavior: none;
+    }
     body {
-      background: #f5efdf;
+      /* Matches the gradient's end colour, so any residual overscroll on
+         browsers that ignore overscroll-behavior still looks seamless. */
+      background: #f3ecd9;
       font-family: 'Nunito Sans', system-ui, sans-serif;
       -webkit-font-smoothing: antialiased;
     }
@@ -72,6 +79,33 @@
       z-index: 1;
       width: 100%;
       max-width: 460px;
+    }
+
+    /* ── language switch ── */
+    .lang-switch {
+      display: flex;
+      justify-content: flex-end;
+      gap: 6px;
+      margin-bottom: 18px;
+      animation: flUp .6s ease both;
+    }
+    .lang-switch button {
+      font-family: 'Nunito Sans', sans-serif;
+      font-weight: 700;
+      font-size: 12.5px;
+      color: #56624f;
+      background: rgba(255,255,255,.7);
+      border: 1px solid rgba(91,138,95,.25);
+      border-radius: 20px;
+      padding: 6px 12px;
+      cursor: pointer;
+      transition: background .15s, color .15s, border-color .15s;
+    }
+    .lang-switch button:hover { background: #fff; }
+    .lang-switch button[aria-pressed="true"] {
+      color: #fff;
+      background: var(--accent, #5b8a5f);
+      border-color: var(--accent, #5b8a5f);
     }
 
     /* ── hero ── */
@@ -286,11 +320,18 @@
 
     <div class="content">
 
+      <!-- LANGUAGE -->
+      <div class="lang-switch" role="group" aria-label="Language / 语言 / 言語">
+        <button type="button" data-lang="en" lang="en">EN</button>
+        <button type="button" data-lang="zh" lang="zh-Hans">中文</button>
+        <button type="button" data-lang="ja" lang="ja">日本語</button>
+      </div>
+
       <!-- HERO -->
       <div class="hero">
         <div class="avatar" id="avatar">photo</div>
         <h1 class="name">Riley 🦌</h1>
-        <p class="bio">Hey! I'm Riley, a deer living in Singapore 🇸🇬 I love traveling and meeting new friends wherever the road takes me. Hope our paths can cross someday! 🌿</p>
+        <p class="bio" data-i18n="bio">Hey! I'm Riley, a deer living in Singapore 🇸🇬 I love traveling and meeting new friends wherever the road takes me. Hope our paths can cross someday! 🌿</p>
       </div>
 
       <!-- SOCIALS -->
@@ -299,27 +340,27 @@
           <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true">
             <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
           </svg>
-          <span>Follow on X</span>
+          <span data-i18n="x">Follow on X</span>
         </a>
         <a href="https://t.me/rileythedeer" target="_blank" rel="noopener noreferrer" class="social-btn social-btn-tg">
           <svg viewBox="0 0 24 24" width="19" height="19" aria-hidden="true">
             <path d="M21.6 4.4 2.9 11.6c-.95.37-.94 1.74.02 2.05l4.6 1.45 1.78 5.4c.24.72 1.15.9 1.64.32l2.45-3.02 4.7 3.45c.6.44 1.45.09 1.6-.66L23.5 5.5c.2-.96-.72-1.74-1.9-1.1z" fill="currentColor"/>
           </svg>
-          <span>Message on Telegram</span>
+          <span data-i18n="telegram">Message on Telegram</span>
         </a>
         <a href="https://bsky.app/profile/rileythedeer.bsky.social" target="_blank" rel="noopener noreferrer" class="social-btn social-btn-bsky">
           <svg viewBox="0 0 24 24" width="19" height="19" fill="currentColor" aria-hidden="true">
             <path d="M12 9.5C10.3 6.6 7.2 4 5 4 3.2 4 2.5 5.3 2.5 7c0 2.4 2.6 4.3 4.8 5-2.2.7-4.8 1.5-4.8 3.6 0 1.4 1 2.4 2.6 2.4 2.4 0 4.6-2.6 6.9-6.4 2.3 3.8 4.5 6.4 6.9 6.4 1.6 0 2.6-1 2.6-2.4 0-2.1-2.6-2.9-4.8-3.6 2.2-.7 4.8-2.6 4.8-5 0-1.7-.7-3-2.5-3-2.2 0-5.3 2.6-7 5.5z"/>
           </svg>
-          <span>Find me on Bluesky</span>
+          <span data-i18n="bluesky">Find me on Bluesky</span>
         </a>
       </div>
 
       <!-- TRAVEL -->
-      <h2 class="travel-heading">Where I'm headed ✈️</h2>
+      <h2 class="travel-heading" data-i18n="headed">Where I'm headed ✈️</h2>
       <div id="trips"></div>
 
-      <div class="footer">📍 Home base: Singapore</div>
+      <div class="footer" data-i18n="homeBase">📍 Home base: Singapore</div>
     </div>
   </div>
 
@@ -355,6 +396,81 @@
 
       const container = document.getElementById('trips');
 
+      // ── i18n ──────────────────────────────────────────────────────
+      // All UI text, the live "when" phrases, and the date locale, keyed by
+      // language. To add a language: copy a block, translate, and add a button
+      // (data-lang="xx") to .lang-switch in the markup above.
+      const I18N = {
+        en: {
+          locale: 'en-US', htmlLang: 'en',
+          bio: "Hey! I'm Riley, a deer living in Singapore 🇸🇬 I love traveling and meeting new friends wherever the road takes me. Hope our paths can cross someday! 🌿",
+          x: 'Follow on X',
+          telegram: 'Message on Telegram',
+          bluesky: 'Find me on Bluesky',
+          headed: "Where I'm headed ✈️",
+          homeBase: '📍 Home base: Singapore',
+          now: 'NOW', next: 'NEXT',
+          happeningNow: 'Happening now', today: 'Today', tomorrow: 'Tomorrow',
+          inDays: function (n) { return 'in ' + n + ' days'; },
+          loading: 'Loading trips…',
+          empty: 'No upcoming trips right now — check back soon! 🌿',
+          error: 'Couldn’t load the travel schedule right now. Make sure the sheet is shared as “Anyone with the link”.',
+          photo: 'photo',
+        },
+        zh: {
+          locale: 'zh-CN', htmlLang: 'zh-Hans',
+          bio: '嗨！我是 Riley，一只住在新加坡 🇸🇬 的小鹿。我喜欢旅行，在旅途中结识新朋友。希望有一天我们的旅途能够相遇！🌿',
+          x: '在 X 上关注我',
+          telegram: '在 Telegram 上联系我',
+          bluesky: '在 Bluesky 上找到我',
+          headed: '我的旅行计划 ✈️',
+          homeBase: '📍 常驻地：新加坡',
+          now: '进行中', next: '即将',
+          happeningNow: '正在进行', today: '今天', tomorrow: '明天',
+          inDays: function (n) { return n + ' 天后'; },
+          loading: '正在加载行程…',
+          empty: '目前没有即将到来的行程，稍后再来看看吧！🌿',
+          error: '暂时无法加载行程。请确认表格已共享为“知道链接的任何人”可查看。',
+          photo: '照片',
+        },
+        ja: {
+          locale: 'ja-JP', htmlLang: 'ja',
+          bio: 'こんにちは！シンガポール 🇸🇬 に住んでいる鹿の Riley です。旅行が大好きで、訪れた先々で新しい友達に出会えるのが楽しみです。いつかどこかで会えますように！🌿',
+          x: 'X でフォロー',
+          telegram: 'Telegram でメッセージ',
+          bluesky: 'Bluesky で見つける',
+          headed: '次の行き先 ✈️',
+          homeBase: '📍 拠点：シンガポール',
+          now: '開催中', next: '次回',
+          happeningNow: '開催中', today: '今日', tomorrow: '明日',
+          inDays: function (n) { return n + '日後'; },
+          loading: '行程を読み込み中…',
+          empty: '今のところ予定はありません。またチェックしてね！🌿',
+          error: '現在、旅行スケジュールを読み込めません。シートが「リンクを知っている全員」に共有されているかご確認ください。',
+          photo: '写真',
+        },
+      };
+
+      // Default language: a saved choice, else the browser's preference, else English.
+      function detectLang() {
+        try {
+          const saved = localStorage.getItem('riley-lang');
+          if (saved && I18N[saved]) return saved;
+        } catch (e) { /* storage may be blocked */ }
+        const navs = navigator.languages || [navigator.language || 'en'];
+        for (let i = 0; i < navs.length; i++) {
+          const low = String(navs[i]).toLowerCase();
+          if (low.indexOf('zh') === 0) return 'zh';
+          if (low.indexOf('ja') === 0) return 'ja';
+          if (low.indexOf('en') === 0) return 'en';
+        }
+        return 'en';
+      }
+
+      let lang = detectLang();
+      let t = I18N[lang];        // active dictionary (reassigned by setLang)
+      let lastRows = null;       // last data rendered, so we can re-render on switch
+
       // Sample data shown until SHEET_ID is configured, so the page never
       // looks empty while you set things up.
       const SAMPLE_ROWS = [
@@ -368,7 +484,7 @@
       }
 
       function fmt(d) {
-        return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+        return d.toLocaleDateString(t.locale, { month: 'short', day: 'numeric' });
       }
 
       // Swap the placeholder for a real photo only once it has successfully
@@ -416,10 +532,10 @@
 
         const days = Math.ceil((start - now) / 86400000);
         let status, when;
-        if (now >= start)    { status = 'now'; when = 'Happening now'; }
-        else if (days <= 0)  { status = 'up';  when = 'Today'; }
-        else if (days === 1) { status = 'up';  when = 'Tomorrow'; }
-        else                 { status = 'up';  when = 'in ' + days + ' days'; }
+        if (now >= start)    { status = 'now'; when = t.happeningNow; }
+        else if (days <= 0)  { status = 'up';  when = t.today; }
+        else if (days === 1) { status = 'up';  when = t.tomorrow; }
+        else                 { status = 'up';  when = t.inDays(days); }
 
         const range = fmt(start) + ' – ' + fmt(end) + ', ' + end.getFullYear();
         return {
@@ -429,6 +545,8 @@
       }
 
       function render(rows) {
+        lastRows = rows;   // remember so a language switch can re-render
+
         // Profile photo is sheet-wide: use the first non-empty Photo cell.
         const withPhoto = rows.find(function (r) { return r.photo && r.photo.trim(); });
         setAvatar(withPhoto && withPhoto.photo);
@@ -438,22 +556,21 @@
 
         // First still-upcoming trip (not already happening) gets the NEXT tag.
         let marked = false;
-        trips.forEach(function (t) {
-          if (!marked && t.status === 'up') { t.isNext = true; marked = true; }
+        trips.forEach(function (trip) {
+          if (!marked && trip.status === 'up') { trip.isNext = true; marked = true; }
         });
 
         container.innerHTML = '';
 
         if (!trips.length) {
-          container.innerHTML =
-            '<div class="trip-msg">No upcoming trips right now — check back soon! 🌿</div>';
+          container.innerHTML = '<div class="trip-msg">' + esc(t.empty) + '</div>';
           return;
         }
 
-        trips.forEach(function (t) {
+        trips.forEach(function (trip) {
           let badge = '';
-          if (t.status === 'now') badge = '<span class="trip-now">NOW</span>';
-          else if (t.isNext)      badge = '<span class="trip-next">NEXT</span>';
+          if (trip.status === 'now') badge = '<span class="trip-now">' + esc(t.now) + '</span>';
+          else if (trip.isNext)      badge = '<span class="trip-next">' + esc(t.next) + '</span>';
 
           const el = document.createElement('div');
           el.className = 'trip-card';
@@ -461,22 +578,60 @@
             '<div class="trip-accent"></div>' +
             '<div class="trip-notch"></div>' +
             '<div class="trip-inner">' +
-              '<div class="trip-flag">' + esc(t.flag) + '</div>' +
+              '<div class="trip-flag">' + esc(trip.flag) + '</div>' +
               '<div class="trip-info">' +
-                '<div class="trip-con">' + TICKET_ICON + '<span>' + esc(t.con) + '</span></div>' +
+                '<div class="trip-con">' + TICKET_ICON + '<span>' + esc(trip.con) + '</span></div>' +
                 '<div class="trip-details">' +
-                  '<span class="trip-city">' + esc(t.city) + '</span>' +
-                  '<span class="trip-range">' + esc(t.range) + '</span>' +
+                  '<span class="trip-city">' + esc(trip.city) + '</span>' +
+                  '<span class="trip-range">' + esc(trip.range) + '</span>' +
                   badge +
                 '</div>' +
               '</div>' +
-              '<span class="trip-when">' + esc(t.when) + '</span>' +
+              '<span class="trip-when">' + esc(trip.when) + '</span>' +
             '</div>';
           container.appendChild(el);
         });
       }
 
       function showMsg(html) { container.innerHTML = '<div class="trip-msg">' + html + '</div>'; }
+
+      // ── apply the active language to the static chrome + switch buttons ──
+      function applyStatic() {
+        document.documentElement.lang = t.htmlLang;
+        const nodes = document.querySelectorAll('[data-i18n]');
+        for (let i = 0; i < nodes.length; i++) {
+          const key = nodes[i].getAttribute('data-i18n');
+          if (t[key] != null) nodes[i].textContent = t[key];
+        }
+        // Avatar placeholder text — only while no photo has replaced it.
+        const av = document.getElementById('avatar');
+        if (av && !av.style.backgroundImage) av.textContent = t.photo;
+        // Reflect the selection on the buttons.
+        const btns = document.querySelectorAll('.lang-switch button');
+        for (let i = 0; i < btns.length; i++) {
+          btns[i].setAttribute('aria-pressed',
+            btns[i].getAttribute('data-lang') === lang ? 'true' : 'false');
+        }
+      }
+
+      function setLang(newLang) {
+        if (!I18N[newLang]) return;
+        lang = newLang;
+        t = I18N[lang];
+        try { localStorage.setItem('riley-lang', lang); } catch (e) { /* ignore */ }
+        applyStatic();
+        if (lastRows) render(lastRows);       // re-render trips in the new language
+        else showMsg(esc(t.loading));         // data not in yet
+      }
+
+      const switchBtns = document.querySelectorAll('.lang-switch button');
+      for (let i = 0; i < switchBtns.length; i++) {
+        switchBtns[i].addEventListener('click', function () {
+          setLang(this.getAttribute('data-lang'));
+        });
+      }
+
+      applyStatic();   // set initial-language chrome before any data loads
 
       // ── CSV parsing (handles quoted fields, embedded commas/quotes) ──
       function parseCSV(text) {
@@ -538,7 +693,7 @@
                   encodeURIComponent(SHEET_ID) + '/gviz/tq?tqx=out:csv';
         if (SHEET_TAB) url += '&sheet=' + encodeURIComponent(SHEET_TAB);
 
-        if (!silent) showMsg('Loading trips…');
+        if (!silent) showMsg(esc(t.loading));
         fetch(url)
           .then(function (res) {
             if (!res.ok) throw new Error('HTTP ' + res.status);
@@ -547,10 +702,7 @@
           .then(function (text) { render(rowsFromCSV(text)); loaded = true; })
           .catch(function (err) {
             console.error('[trips] failed to load sheet:', err);
-            if (!loaded) {
-              showMsg("Couldn't load the travel schedule right now. " +
-                      'Make sure the sheet is shared as “Anyone with the link”.');
-            }
+            if (!loaded) showMsg(esc(t.error));
           });
       }
 
