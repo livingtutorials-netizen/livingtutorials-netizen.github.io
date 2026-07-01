@@ -23,9 +23,12 @@
       -webkit-font-smoothing: antialiased;
     }
 
+    /* Entrance slides content up. Deliberately animates transform ONLY (no
+       opacity) so content is never invisible if the animation clock stalls
+       or motion is unavailable — it just doesn't slide. */
     @keyframes flUp {
-      from { opacity: 0; transform: translateY(18px); }
-      to   { opacity: 1; transform: none; }
+      from { transform: translateY(18px); }
+      to   { transform: none; }
     }
     @keyframes drift {
       0%, 100% { transform: translate(0, 0); }
@@ -34,6 +37,15 @@
     @keyframes pulseRing {
       0%   { box-shadow: 0 0 0 0   rgba(91,138,95,.45); }
       100% { box-shadow: 0 0 0 18px rgba(91,138,95,0); }
+    }
+    /* The accent "tab" of a live trip breathes to draw the eye. */
+    @keyframes nowGlow {
+      0%, 100% { box-shadow: 0 0 5px 0  rgba(91,138,95,.55); }
+      50%      { box-shadow: 0 0 15px 3px rgba(91,138,95,.95); }
+    }
+    @keyframes nowBadge {
+      0%, 100% { opacity: 1; }
+      50%      { opacity: .62; }
     }
 
     /* ── page shell ── */
@@ -84,6 +96,7 @@
     /* ── language switch ── */
     .lang-switch {
       display: flex;
+      flex-wrap: wrap;
       justify-content: flex-end;
       gap: 6px;
       margin-bottom: 18px;
@@ -92,17 +105,46 @@
     .lang-switch button {
       font-family: 'Nunito Sans', sans-serif;
       font-weight: 700;
-      font-size: 12.5px;
+      font-size: 13px;
       color: #56624f;
       background: rgba(255,255,255,.7);
       border: 1px solid rgba(91,138,95,.25);
       border-radius: 20px;
-      padding: 6px 12px;
+      padding: 8px 15px;
+      min-height: 40px;
       cursor: pointer;
       transition: background .15s, color .15s, border-color .15s;
     }
     .lang-switch button:hover { background: #fff; }
     .lang-switch button[aria-pressed="true"] {
+      color: #fff;
+      background: var(--accent, #5b8a5f);
+      border-color: var(--accent, #5b8a5f);
+    }
+
+    /* ── regional-variant sub-toggle (简体/繁體, Indonesia/Melayu) ── */
+    .variant-switch {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+      gap: 6px;
+      margin: -8px 0 16px;
+    }
+    .variant-switch button {
+      font-family: 'Nunito Sans', sans-serif;
+      font-weight: 700;
+      font-size: 11.5px;
+      color: #6f7a67;
+      background: transparent;
+      border: 1px solid rgba(91,138,95,.22);
+      border-radius: 14px;
+      padding: 5px 11px;
+      min-height: 32px;
+      cursor: pointer;
+      transition: background .15s, color .15s, border-color .15s;
+    }
+    .variant-switch button:hover { background: rgba(255,255,255,.6); }
+    .variant-switch button[aria-pressed="true"] {
       color: #fff;
       background: var(--accent, #5b8a5f);
       border-color: var(--accent, #5b8a5f);
@@ -179,6 +221,73 @@
     .social-btn-tg:hover   { transform: translateY(-3px); box-shadow: 0 12px 24px rgba(63,160,196,.38); }
     .social-btn-bsky:hover { transform: translateY(-3px); box-shadow: 0 12px 24px rgba(74,158,255,.4); }
 
+    /* ── fursuit credit ── */
+    .fursuit-credit {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 14px;
+      background: rgba(255,255,255,.75);
+      border: 1px solid rgba(91,138,95,.22);
+      border-radius: 20px;
+      text-decoration: none;
+      font-size: 13px;
+      color: #56624f;
+      transition: transform .18s, box-shadow .18s, background .18s;
+    }
+    .fursuit-credit:hover {
+      transform: translateY(-2px);
+      background: #fff;
+      box-shadow: 0 8px 18px rgba(57,71,59,.12);
+    }
+    .fursuit-credit strong { color: #2f4a3a; font-weight: 700; }
+    .fursuit-credit .fc-icon { font-size: 15px; line-height: 1; }
+    .fursuit-credit .fc-arrow { width: 13px; height: 13px; color: var(--accent, #5b8a5f); flex: none; }
+
+    /* ── languages spoken ── */
+    .lang-heading {
+      margin: 30px 0 0;
+      font-family: 'Fredoka', sans-serif;
+      font-weight: 600;
+      font-size: 23px;
+      color: #2f4a3a;
+      animation: flUp .6s ease both;
+    }
+    .lang-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 11px;
+    }
+    .lang-item {
+      flex: 1 1 190px;
+      display: flex;
+      align-items: center;
+      gap: 11px;
+      background: #fff;
+      border-radius: 14px;
+      padding: 11px 13px;
+      box-shadow: 0 6px 20px rgba(57,71,59,.08);
+    }
+    .lang-flag { font-size: 22px; flex: none; }
+    .lang-meta {
+      flex: 1; min-width: 0;
+      display: flex; flex-direction: column; gap: 5px;
+    }
+    .lang-name {
+      font-family: 'Fredoka', sans-serif;
+      font-weight: 600;
+      font-size: 15px;
+      line-height: 1;
+      color: #2f4a3a;
+    }
+    .lang-row { display: flex; align-items: center; gap: 8px; }
+    .lang-level { font-size: 11.5px; color: #6f7a67; }
+    /* Dot meter: universally readable proficiency. */
+    .lang-dots { display: flex; gap: 4px; flex: none; }
+    .lang-dots i { width: 8px; height: 8px; border-radius: 50%; background: #e0e7d8; }
+    .lang-dots i.on { background: var(--accent, #5b8a5f); }
+
     /* ── travel ── */
     .travel-heading {
       margin: 34px 0 4px;
@@ -194,19 +303,26 @@
       position: relative;
       background: #fff;
       border-radius: 20px;
-      padding: 16px 18px;
+      padding: 15px 18px 16px;
       margin-top: 13px;
       box-shadow: 0 6px 20px rgba(57,71,59,.08);
-      transition: transform .2s;
+      transition: transform .2s, box-shadow .2s;
       overflow: hidden;
     }
     .trip-card:hover { transform: translateY(-3px); }
+    .trip-card.is-now { box-shadow: 0 6px 24px rgba(91,138,95,.24); }
 
     .trip-accent {
       position: absolute;
       left: 0; top: 0; bottom: 0;
       width: 5px;
       background: var(--accent, #5b8a5f);
+      border-radius: 0 4px 4px 0;
+    }
+    /* Live trip: the tab widens and pulses to pull the eye. */
+    .trip-accent.is-now {
+      width: 7px;
+      animation: nowGlow 1.8s ease-in-out infinite;
     }
     .trip-notch {
       position: absolute;
@@ -220,59 +336,78 @@
     .trip-inner {
       display: flex;
       align-items: center;
-      gap: 15px;
+      gap: 14px;
       padding-left: 8px;
     }
     .trip-flag {
-      width: 52px; height: 52px;
+      width: 54px; height: 54px;
       border-radius: 16px;
       background: #eef3e8;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 27px;
+      font-size: 28px;
       flex: none;
     }
     .trip-info { flex: 1; min-width: 0; }
 
-    .trip-con {
+    /* Eyebrow row: convention name + status badge live together here, so the
+       badge never competes with the date line (fixes CJK badge clipping). */
+    .trip-con-row {
       display: flex;
       align-items: center;
-      gap: 7px;
-      font: 800 10px/1 'Nunito Sans', sans-serif;
-      letter-spacing: .1em;
+      gap: 10px;
+    }
+    .trip-con {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      flex: 1 1 auto;
+      min-width: 0;
+      font: 800 12.5px/1.1 'Nunito Sans', sans-serif;
+      letter-spacing: .06em;
       text-transform: uppercase;
       color: var(--accent, #5b8a5f);
     }
-    .trip-details {
-      display: flex;
-      align-items: baseline;
-      gap: 8px;
-      margin-top: 3px;
+    .trip-con svg { flex: none; }
+    .trip-con > span {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
     }
+    .trip-badge {
+      flex: none;
+      margin-left: auto;
+      white-space: nowrap;
+      font: 800 9.5px/1 'Nunito Sans', sans-serif;
+      letter-spacing: .05em;
+      color: #fff;
+      border-radius: 20px;
+      padding: 4px 9px;
+    }
+    .trip-badge-next { background: #e08a4f; }
+    .trip-badge-now {
+      background: var(--accent, #5b8a5f);
+      animation: nowBadge 1.8s ease-in-out infinite;
+    }
+
     .trip-city {
       font-family: 'Fredoka', sans-serif;
       font-weight: 600;
-      font-size: 19px;
+      font-size: 20px;
+      line-height: 1.15;
       color: #2f4a3a;
+      margin-top: 4px;
     }
-    .trip-range { font-size: 12.5px; color: #8a937e; }
-    .trip-next {
-      font: 800 8px/1 'Nunito Sans';
-      letter-spacing: .08em;
-      color: #fff;
-      background: #e08a4f;
-      border-radius: 20px;
-      padding: 3px 7px;
+    /* Date + live status wrap onto their own line so nothing truncates. */
+    .trip-meta {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 5px 10px;
+      margin-top: 7px;
     }
-    .trip-now {
-      font: 800 8px/1 'Nunito Sans';
-      letter-spacing: .08em;
-      color: #fff;
-      background: var(--accent, #5b8a5f);
-      border-radius: 20px;
-      padding: 3px 7px;
-    }
+    .trip-range { font-size: 13px; color: #6f7a67; }
 
     /* ── status messages (loading / empty / error) ── */
     .trip-msg {
@@ -294,11 +429,11 @@
       padding: 1px 5px;
     }
     .trip-when {
-      font: 700 11px/1 'Nunito Sans';
+      font: 700 11.5px/1 'Nunito Sans';
       color: var(--accent, #5b8a5f);
       background: #e7f0e2;
       border-radius: 20px;
-      padding: 8px 11px;
+      padding: 5px 10px;
       white-space: nowrap;
       flex: none;
     }
@@ -308,11 +443,37 @@
       text-align: center;
       margin-top: 28px;
       font-size: 12.5px;
-      color: #9aa395;
+      color: #7d8676;
+    }
+
+    /* ── mobile polish ── */
+    @media (max-width: 400px) {
+      .trip-inner { gap: 12px; }
+      .trip-flag  { width: 48px; height: 48px; font-size: 25px; }
+      .trip-city  { font-size: 18px; }
+      .bio        { font-size: 14.5px; }
+    }
+
+    /* Respect users who prefer less motion — drop drift, glow & entrances. */
+    @media (prefers-reduced-motion: reduce) {
+      *,
+      *::before,
+      *::after {
+        animation-duration: .001ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: .001ms !important;
+      }
     }
   </style>
 </head>
 <body>
+  <template id="__bundler_thumbnail" data-bg-color="#f3ecd9">
+    <svg viewBox="0 0 1200 800" xmlns="http://www.w3.org/2000/svg">
+      <rect width="1200" height="800" fill="#f3ecd9"/>
+      <rect x="470" y="250" width="260" height="260" rx="72" fill="#5b8a5f"/>
+      <text x="600" y="470" font-size="150" text-anchor="middle">🦌</text>
+    </svg>
+  </template>
   <div class="page">
     <div class="blob blob-1"></div>
     <div class="blob blob-2"></div>
@@ -325,13 +486,21 @@
         <button type="button" data-lang="en" lang="en">EN</button>
         <button type="button" data-lang="zh" lang="zh-Hans">中文</button>
         <button type="button" data-lang="ja" lang="ja">日本語</button>
+        <button type="button" data-lang="id" lang="id">Bahasa</button>
+        <button type="button" data-lang="th" lang="th">ไทย</button>
       </div>
+      <div class="variant-switch" role="group" aria-label="Regional variant"></div>
 
       <!-- HERO -->
       <div class="hero">
         <div class="avatar" id="avatar">photo</div>
         <h1 class="name">Riley 🦌</h1>
         <p class="bio" data-i18n="bio">Hey! I'm Riley, a deer living in Singapore 🇸🇬 I love traveling and meeting new friends wherever the road takes me. Hope our paths can cross someday! 🌿</p>
+        <a class="fursuit-credit" href="https://www.animagusstudios.com/" target="_blank" rel="noopener noreferrer">
+          <span class="fc-icon" aria-hidden="true">🧵</span>
+          <span><span data-i18n="fursuitBy">Fursuit by</span> <strong>Animagus Studios</strong></span>
+          <svg class="fc-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7M9 7h8v8"/></svg>
+        </a>
       </div>
 
       <!-- SOCIALS -->
@@ -354,6 +523,31 @@
           </svg>
           <span data-i18n="bluesky">Find me on Bluesky</span>
         </a>
+      </div>
+
+      <!-- LANGUAGES -->
+      <h2 class="lang-heading" data-i18n="langHeading">Languages 💬</h2>
+      <div class="lang-list">
+        <div class="lang-item">
+          <span class="lang-flag" aria-hidden="true">🇬🇧</span>
+          <div class="lang-meta">
+            <span class="lang-name" data-i18n="langEnglish">English</span>
+            <span class="lang-row">
+              <span class="lang-dots" aria-hidden="true"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i></span>
+              <span class="lang-level" data-i18n="levelNative">Native</span>
+            </span>
+          </div>
+        </div>
+        <div class="lang-item">
+          <span class="lang-flag" aria-hidden="true">🇨🇳</span>
+          <div class="lang-meta">
+            <span class="lang-name" data-i18n="langChinese">Chinese</span>
+            <span class="lang-row">
+              <span class="lang-dots" aria-hidden="true"><i class="on"></i><i class="on"></i><i class="on"></i><i></i><i></i></span>
+              <span class="lang-level" data-i18n="levelConversational">Conversational</span>
+            </span>
+          </div>
+        </div>
       </div>
 
       <!-- TRAVEL -->
@@ -415,41 +609,164 @@
           loading: 'Loading trips…',
           empty: 'No upcoming trips right now — check back soon! 🌿',
           error: 'Couldn’t load the travel schedule right now. Make sure the sheet is shared as “Anyone with the link”.',
+          langHeading: 'Languages 💬',
+          fursuitBy: 'Fursuit by',
+          langEnglish: 'English', langChinese: 'Chinese',
+          levelNative: 'Native', levelConversational: 'Conversational',
           photo: 'photo',
         },
         zh: {
           locale: 'zh-CN', htmlLang: 'zh-Hans',
-          bio: '嗨！我是 Riley，一只住在新加坡 🇸🇬 的小鹿。我喜欢旅行，在旅途中结识新朋友。希望有一天我们的旅途能够相遇！🌿',
+          bio: '嗨～我是 Riley，一只住在新加坡 🇸🇬 的小鹿。我超爱旅行，也喜欢在旅途中认识新朋友。希望有一天能和你相遇！🌿',
           x: '在 X 上关注我',
-          telegram: '在 Telegram 上联系我',
-          bluesky: '在 Bluesky 上找到我',
+          telegram: '来 Telegram 找我聊天',
+          bluesky: '在 Bluesky 上关注我',
           headed: '我的旅行计划 ✈️',
-          homeBase: '📍 常驻地：新加坡',
+          homeBase: '📍 常驻新加坡',
           now: '进行中', next: '即将',
-          happeningNow: '正在进行', today: '今天', tomorrow: '明天',
-          inDays: function (n) { return n + ' 天后'; },
+          happeningNow: '正在进行', today: '就是今天', tomorrow: '就在明天',
+          inDays: function (n) { return '还有 ' + n + ' 天'; },
           loading: '正在加载行程…',
-          empty: '目前没有即将到来的行程，稍后再来看看吧！🌿',
-          error: '暂时无法加载行程。请确认表格已共享为“知道链接的任何人”可查看。',
+          empty: '暂时没有新的行程，过阵子再来看看吧！🌿',
+          error: '暂时无法加载行程，请确认表格已设为「知道链接的任何人都可查看」。',
+          langHeading: '语言 💬',
+          fursuitBy: 'Fursuit 制作：',
+          langEnglish: '英语', langChinese: '中文',
+          levelNative: '母语', levelConversational: '日常交流',
+          photo: '照片',
+        },
+        zhHant: {
+          locale: 'zh-TW', htmlLang: 'zh-Hant',
+          bio: '嗨～我是 Riley，一隻住在新加坡 🇸🇬 的小鹿。我超愛旅行，也喜歡在旅途中認識新朋友。希望有一天能和你相遇！🌿',
+          x: '在 X 上關注我',
+          telegram: '來 Telegram 找我聊天',
+          bluesky: '在 Bluesky 上關注我',
+          headed: '我的旅行計畫 ✈️',
+          homeBase: '📍 常駐新加坡',
+          now: '進行中', next: '即將',
+          happeningNow: '正在進行', today: '就是今天', tomorrow: '就在明天',
+          inDays: function (n) { return '還有 ' + n + ' 天'; },
+          loading: '正在載入行程…',
+          empty: '暫時沒有新的行程，過陣子再來看看吧！🌿',
+          error: '暫時無法載入行程，請確認表格已設為「知道連結的任何人都可檢視」。',
+          langHeading: '語言 💬',
+          fursuitBy: 'Fursuit 製作：',
+          langEnglish: '英語', langChinese: '中文',
+          levelNative: '母語', levelConversational: '日常交流',
           photo: '照片',
         },
         ja: {
           locale: 'ja-JP', htmlLang: 'ja',
-          bio: 'こんにちは！シンガポール 🇸🇬 に住んでいる鹿の Riley です。旅行が大好きで、訪れた先々で新しい友達に出会えるのが楽しみです。いつかどこかで会えますように！🌿',
-          x: 'X でフォロー',
-          telegram: 'Telegram でメッセージ',
-          bluesky: 'Bluesky で見つける',
+          bio: 'こんにちは！シンガポール 🇸🇬 に住んでいる鹿の Riley です。旅行が大好きで、行く先々で新しい友だちに出会えるのを楽しみにしています。いつかどこかで会えたらうれしいな！🌿',
+          x: 'X でフォローする',
+          telegram: 'Telegram で話しかけてね',
+          bluesky: 'Bluesky でフォローする',
           headed: '次の行き先 ✈️',
           homeBase: '📍 拠点：シンガポール',
           now: '開催中', next: '次回',
           happeningNow: '開催中', today: '今日', tomorrow: '明日',
-          inDays: function (n) { return n + '日後'; },
+          inDays: function (n) { return 'あと' + n + '日'; },
           loading: '行程を読み込み中…',
-          empty: '今のところ予定はありません。またチェックしてね！🌿',
-          error: '現在、旅行スケジュールを読み込めません。シートが「リンクを知っている全員」に共有されているかご確認ください。',
+          empty: '今のところ予定はありません。また見に来てね！🌿',
+          error: '行程を読み込めませんでした。シートが「リンクを知っている全員」に公開されているかご確認ください。',
+          langHeading: '話せる言語 💬',
+          fursuitBy: 'ファースーツ製作：',
+          langEnglish: '英語', langChinese: '中国語',
+          levelNative: 'ネイティブ', levelConversational: '日常会話',
           photo: '写真',
         },
+        id: {
+          locale: 'id-ID', htmlLang: 'id',
+          bio: 'Hai! Aku Riley, seekor rusa yang tinggal di Singapura 🇸🇬 Aku suka jalan-jalan dan berkenalan dengan teman baru di mana pun aku singgah. Semoga suatu hari kita bisa bertemu ya! 🌿',
+          x: 'Ikuti di X',
+          telegram: 'Chat lewat Telegram',
+          bluesky: 'Cari aku di Bluesky',
+          headed: 'Tujuanku berikutnya ✈️',
+          homeBase: '📍 Domisili: Singapura',
+          now: 'SEKARANG', next: 'SEGERA',
+          happeningNow: 'Sedang berlangsung', today: 'Hari ini', tomorrow: 'Besok',
+          inDays: function (n) { return n + ' hari lagi'; },
+          loading: 'Memuat perjalanan…',
+          empty: 'Belum ada perjalanan baru — cek lagi nanti ya! 🌿',
+          error: 'Tidak bisa memuat jadwal perjalanan saat ini. Pastikan sheet dibagikan sebagai “Siapa saja yang memiliki link”.',
+          langHeading: 'Bahasa 💬',
+          fursuitBy: 'Fursuit oleh',
+          langEnglish: 'Inggris', langChinese: 'Mandarin',
+          levelNative: 'Bahasa ibu', levelConversational: 'Percakapan',
+          photo: 'foto',
+        },
+        ms: {
+          locale: 'ms-MY', htmlLang: 'ms',
+          bio: 'Hai! Saya Riley, seekor rusa yang tinggal di Singapura 🇸🇬 Saya suka mengembara dan berkenalan dengan kawan baharu di mana sahaja saya singgah. Semoga suatu hari nanti kita dapat bertemu ya! 🌿',
+          x: 'Ikut di X',
+          telegram: 'Mesej di Telegram',
+          bluesky: 'Cari saya di Bluesky',
+          headed: 'Destinasi seterusnya ✈️',
+          homeBase: '📍 Menetap di Singapura',
+          now: 'SEKARANG', next: 'SEGERA',
+          happeningNow: 'Sedang berlangsung', today: 'Hari ini', tomorrow: 'Esok',
+          inDays: function (n) { return n + ' hari lagi'; },
+          loading: 'Memuatkan perjalanan…',
+          empty: 'Belum ada perjalanan baharu — datang semula nanti ya! 🌿',
+          error: 'Tidak dapat memuatkan jadual perjalanan buat masa ini. Pastikan sheet dikongsi sebagai “Sesiapa yang mempunyai pautan”.',
+          langHeading: 'Bahasa 💬',
+          fursuitBy: 'Fursuit oleh',
+          langEnglish: 'Inggeris', langChinese: 'Mandarin',
+          levelNative: 'Bahasa ibunda', levelConversational: 'Perbualan',
+          photo: 'foto',
+        },
+        th: {
+          locale: 'th-TH', htmlLang: 'th',
+          bio: 'สวัสดี! เราชื่อ Riley เป็นกวางที่อาศัยอยู่ในสิงคโปร์ 🇸🇬 เราชอบเที่ยวและชอบทำความรู้จักเพื่อนใหม่ทุกที่ที่ได้ไป หวังว่าสักวันเราจะได้เจอกันนะ! 🌿',
+          x: 'ติดตามบน X',
+          telegram: 'ทักมาคุยกันที่ Telegram',
+          bluesky: 'ตามเราได้ที่ Bluesky',
+          headed: 'ทริปต่อไปของเรา ✈️',
+          homeBase: '📍 พำนักอยู่ที่สิงคโปร์',
+          now: 'ตอนนี้', next: 'เร็ว ๆ นี้',
+          happeningNow: 'กำลังจัดขึ้น', today: 'วันนี้', tomorrow: 'พรุ่งนี้',
+          inDays: function (n) { return 'อีก ' + n + ' วัน'; },
+          loading: 'กำลังโหลดทริป…',
+          empty: 'ยังไม่มีทริปใหม่ตอนนี้ — ไว้แวะมาดูใหม่นะ! 🌿',
+          error: 'โหลดตารางการเดินทางไม่ได้ในตอนนี้ กรุณาตรวจสอบว่าชีตถูกแชร์เป็น “ทุกคนที่มีลิงก์”',
+          langHeading: 'ภาษาที่พูดได้ 💬',
+          fursuitBy: 'Fursuit โดย',
+          langEnglish: 'อังกฤษ', langChinese: 'จีน',
+          levelNative: 'ภาษาแม่', levelConversational: 'พอคุยได้',
+          photo: 'รูปภาพ',
+        },
       };
+
+      // City-name localisation. Any city not listed falls back to the sheet's
+      // original spelling, so new destinations still work untranslated.
+      const CITY_NAMES = {
+        'singapore':    { zh: '新加坡', zhHant: '新加坡', ja: 'シンガポール', id: 'Singapura',    ms: 'Singapura',    th: 'สิงคโปร์' },
+        'jakarta':      { zh: '雅加达', zhHant: '雅加達', ja: 'ジャカルタ',   id: 'Jakarta',      ms: 'Jakarta',      th: 'จาการ์ตา' },
+        'osaka':        { zh: '大阪',   zhHant: '大阪',   ja: '大阪',         id: 'Osaka',        ms: 'Osaka',        th: 'โอซากะ' },
+        'kuala lumpur': { zh: '吉隆坡', zhHant: '吉隆坡', ja: 'クアラルンプール', id: 'Kuala Lumpur', ms: 'Kuala Lumpur', th: 'กัวลาลัมเปอร์' },
+        'tokyo':        { zh: '东京',   zhHant: '東京',   ja: '東京',         id: 'Tokyo',        ms: 'Tokyo',        th: 'โตเกียว' },
+        'bangkok':      { zh: '曼谷',   zhHant: '曼谷',   ja: 'バンコク',     id: 'Bangkok',      ms: 'Bangkok',      th: 'กรุงเทพฯ' },
+        'hong kong':    { zh: '香港',   zhHant: '香港',   ja: '香港',         id: 'Hong Kong',    ms: 'Hong Kong',    th: 'ฮ่องกง' },
+        'taipei':       { zh: '台北',   zhHant: '台北',   ja: '台北',         id: 'Taipei',       ms: 'Taipei',       th: 'ไทเป' },
+        'seoul':        { zh: '首尔',   zhHant: '首爾',   ja: 'ソウル',       id: 'Seoul',        ms: 'Seoul',        th: 'โซล' },
+      };
+      function translateCity(city) {
+        const entry = CITY_NAMES[String(city || '').trim().toLowerCase()];
+        return (entry && entry[lang]) ? entry[lang] : city;
+      }
+
+      // Language groups that offer regional variants. The top-bar button opens
+      // the group; a secondary toggle switches the specific variant.
+      const VARIANTS = {
+        zh: [ { code: 'zh', label: '简体' }, { code: 'zhHant', label: '繁體' } ],
+        id: [ { code: 'id', label: 'Indonesia' }, { code: 'ms', label: 'Melayu' } ],
+      };
+      // Map any variant code back to its top-bar group button.
+      function groupKey(code) {
+        if (code === 'zh' || code === 'zhHant') return 'zh';
+        if (code === 'id' || code === 'ms') return 'id';
+        return code;
+      }
 
       // Default language: a saved choice, else the browser's preference, else English.
       function detectLang() {
@@ -460,8 +777,14 @@
         const navs = navigator.languages || [navigator.language || 'en'];
         for (let i = 0; i < navs.length; i++) {
           const low = String(navs[i]).toLowerCase();
-          if (low.indexOf('zh') === 0) return 'zh';
+          if (low.indexOf('zh') === 0) {
+            return (low.indexOf('hant') > -1 || low.indexOf('-tw') > -1 ||
+                    low.indexOf('-hk') > -1 || low.indexOf('-mo') > -1) ? 'zhHant' : 'zh';
+          }
           if (low.indexOf('ja') === 0) return 'ja';
+          if (low.indexOf('ms') === 0) return 'ms';
+          if (low.indexOf('id') === 0) return 'id';
+          if (low.indexOf('th') === 0) return 'th';
           if (low.indexOf('en') === 0) return 'en';
         }
         return 'en';
@@ -563,37 +886,48 @@
         container.innerHTML = '';
 
         if (!trips.length) {
+          container.removeAttribute('role');
           container.innerHTML = '<div class="trip-msg">' + esc(t.empty) + '</div>';
           return;
         }
 
+        container.setAttribute('role', 'list');
+
         trips.forEach(function (trip) {
+          const isNow = trip.status === 'now';
+          const cityName = translateCity(trip.city);
           let badge = '';
-          if (trip.status === 'now') badge = '<span class="trip-now">' + esc(t.now) + '</span>';
-          else if (trip.isNext)      badge = '<span class="trip-next">' + esc(t.next) + '</span>';
+          if (isNow)            badge = '<span class="trip-badge trip-badge-now">'  + esc(t.now)  + '</span>';
+          else if (trip.isNext) badge = '<span class="trip-badge trip-badge-next">' + esc(t.next) + '</span>';
 
           const el = document.createElement('div');
-          el.className = 'trip-card';
+          el.className = 'trip-card' + (isNow ? ' is-now' : '');
+          el.setAttribute('role', 'listitem');
+          // Full spoken summary for screen readers (badge/colour aren't enough).
+          el.setAttribute('aria-label',
+            trip.con + ' \u2014 ' + cityName + '. ' + trip.range + '. ' + trip.when + '.');
           el.innerHTML =
-            '<div class="trip-accent"></div>' +
+            '<div class="trip-accent' + (isNow ? ' is-now' : '') + '"></div>' +
             '<div class="trip-notch"></div>' +
             '<div class="trip-inner">' +
-              '<div class="trip-flag">' + esc(trip.flag) + '</div>' +
+              '<div class="trip-flag" aria-hidden="true">' + esc(trip.flag) + '</div>' +
               '<div class="trip-info">' +
-                '<div class="trip-con">' + TICKET_ICON + '<span>' + esc(trip.con) + '</span></div>' +
-                '<div class="trip-details">' +
-                  '<span class="trip-city">' + esc(trip.city) + '</span>' +
-                  '<span class="trip-range">' + esc(trip.range) + '</span>' +
+                '<div class="trip-con-row">' +
+                  '<span class="trip-con">' + TICKET_ICON + '<span>' + esc(trip.con) + '</span></span>' +
                   badge +
                 '</div>' +
+                '<div class="trip-city">' + esc(cityName) + '</div>' +
+                '<div class="trip-meta">' +
+                  '<span class="trip-range">' + esc(trip.range) + '</span>' +
+                  '<span class="trip-when">' + esc(trip.when) + '</span>' +
+                '</div>' +
               '</div>' +
-              '<span class="trip-when">' + esc(trip.when) + '</span>' +
             '</div>';
           container.appendChild(el);
         });
       }
 
-      function showMsg(html) { container.innerHTML = '<div class="trip-msg">' + html + '</div>'; }
+      function showMsg(html) { container.removeAttribute('role'); container.innerHTML = '<div class="trip-msg">' + html + '</div>'; }
 
       // ── apply the active language to the static chrome + switch buttons ──
       function applyStatic() {
@@ -606,12 +940,34 @@
         // Avatar placeholder text — only while no photo has replaced it.
         const av = document.getElementById('avatar');
         if (av && !av.style.backgroundImage) av.textContent = t.photo;
-        // Reflect the selection on the buttons.
+        // Reflect the selection: the top bar highlights the active GROUP…
+        const cur = groupKey(lang);
         const btns = document.querySelectorAll('.lang-switch button');
         for (let i = 0; i < btns.length; i++) {
           btns[i].setAttribute('aria-pressed',
-            btns[i].getAttribute('data-lang') === lang ? 'true' : 'false');
+            groupKey(btns[i].getAttribute('data-lang')) === cur ? 'true' : 'false');
         }
+        renderVariants();   // …and the secondary toggle shows this group's variants
+      }
+
+      // Build the variant sub-toggle (简体/繁體, Indonesia/Melayu) for the active
+      // group; hidden entirely for groups that have no regional variants.
+      function renderVariants() {
+        const host = document.querySelector('.variant-switch');
+        if (!host) return;
+        const variants = VARIANTS[groupKey(lang)];
+        host.innerHTML = '';
+        if (!variants) { host.style.display = 'none'; return; }
+        host.style.display = 'flex';
+        variants.forEach(function (v) {
+          const b = document.createElement('button');
+          b.type = 'button';
+          b.textContent = v.label;
+          b.setAttribute('lang', v.code === 'zhHant' ? 'zh-Hant' : (v.code === 'zh' ? 'zh-Hans' : v.code));
+          b.setAttribute('aria-pressed', v.code === lang ? 'true' : 'false');
+          b.addEventListener('click', function () { setLang(v.code); });
+          host.appendChild(b);
+        });
       }
 
       function setLang(newLang) {
@@ -627,7 +983,11 @@
       const switchBtns = document.querySelectorAll('.lang-switch button');
       for (let i = 0; i < switchBtns.length; i++) {
         switchBtns[i].addEventListener('click', function () {
-          setLang(this.getAttribute('data-lang'));
+          const code = this.getAttribute('data-lang');
+          // Re-clicking the current group keeps the chosen variant; otherwise
+          // switch to that group's default variant (its data-lang value).
+          if (groupKey(code) === groupKey(lang)) return;
+          setLang(code);
         });
       }
 
